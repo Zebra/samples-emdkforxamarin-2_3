@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Xml;
+using System.IO;
 
 using Android.App;
 using Android.Content;
@@ -10,11 +11,10 @@ using Android.OS;
 using Android.Util;
 
 using Symbol.XamarinEMDK;
-using System.IO;
 
-namespace Symbol.XamarinEMDK.ProfilePowerMgrSample1
+namespace Symbol.XamarinEMDK.ProfileWifiSample1
 {
-    [Activity(Label = "ProfilePowerMgrSample1", MainLauncher = true, Icon = "@drawable/icon", WindowSoftInputMode = SoftInput.AdjustPan, ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait)]
+    [Activity(Label = "ProfileWifiSample1", MainLauncher = true, Icon = "@drawable/icon", WindowSoftInputMode = SoftInput.AdjustPan, ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait)]
     public class MainActivity : Activity, EMDKManager.IEMDKListener
     {
         // Declare a variable to store EMDKManager object
@@ -23,14 +23,29 @@ namespace Symbol.XamarinEMDK.ProfilePowerMgrSample1
         private ProfileManager profileManager = null;
 
         // Assign the 'ProfileName' used in EMDKConfig.xml
-        private string profileName = "PowerMgrProfile-1";
-        // Assign the 'emdk_name' used in EMDKConfig.xml for the 'PowerMgr' feature that used for name-value pairs
-        private string featureName = "PowerMgr1";
+        private string profileName = "WifiProfile-1";
 
         private TextView statusTextView = null;
-        private RadioGroup pwrRadioGroup = null;
-        private RadioButton pwrRadioSuspend = null;
-        private RadioButton pwrRadioReset = null;
+        private RadioButton wifiRadioEnable = null;
+        private RadioButton wifiRadioDisable = null;
+        private Spinner ActionSpinner = null;
+        private EditText ssidEditText = null;
+
+        private Action action = Action.DO_NOTHING;
+
+        private String[] ActionStrings = { "Do Nothing", "Add", "Remove", "Connect", "Disconnect", "Enable", "Disable" };
+        private String[] RadioStateStrings = { "enable", "disable" };
+
+        private enum Action
+        {
+            DO_NOTHING,
+            ADD,
+            REMOVE,
+            CONNECT,
+            DISCONNECT,
+            ENABLE,
+            DISABLE
+        };
 
         protected override void OnCreate(Bundle bundle)
         {
@@ -66,20 +81,18 @@ namespace Symbol.XamarinEMDK.ProfilePowerMgrSample1
 
 			// Set corresponding layout dynamically based on the default/natural orientation.
 			if(width > height){
-				SetContentView(Resource.Layout.Landscape);
+				SetContentView(Resource.Layout.Landscape_Layout);
 			} else {
-				SetContentView(Resource.Layout.Portrait);
+				SetContentView(Resource.Layout.Portrait_Layout);
 			}
+            statusTextView = FindViewById(Resource.Id.textViewStatus) as TextView;
+            wifiRadioEnable = FindViewById(Resource.Id.radio0) as RadioButton;
+            wifiRadioDisable = FindViewById(Resource.Id.radio1) as RadioButton;
+            ActionSpinner = FindViewById(Resource.Id.spinner1) as Spinner;
+            ssidEditText = FindViewById(Resource.Id.editTextSSID) as EditText;
 
-            statusTextView = (TextView)FindViewById(Resource.Id.textViewStatus) as TextView;
-            pwrRadioGroup = (RadioGroup)FindViewById(Resource.Id.radioGroupPwr) as RadioGroup;
-            pwrRadioSuspend = (RadioButton)FindViewById(Resource.Id.radioSuspend) as RadioButton;
-            pwrRadioReset = (RadioButton)FindViewById(Resource.Id.radioReset) as RadioButton;
-
-            // Set listener to the button
             AddSetButtonListener();
 
-            // The EMDKManager object will be created and returned in the callback
             EMDKResults results = EMDKManager.GetEMDKManager(Application.Context, this);
 
             // Check the return status of processProfile
@@ -93,6 +106,7 @@ namespace Symbol.XamarinEMDK.ProfilePowerMgrSample1
                 // EMDKManager object initialization succeeded
                 statusTextView.Text = "EMDKManager object creation succeeded ...";
             }
+
         }
 
         protected override void OnDestroy()
@@ -136,7 +150,7 @@ namespace Symbol.XamarinEMDK.ProfilePowerMgrSample1
 
                 // Add listener to get async results
                 profileManager.Data += profileManager_Data;
-             }
+            }
             catch (Exception e)
             {
                 statusTextView.Text = "Error loading profile manager.";
@@ -147,6 +161,7 @@ namespace Symbol.XamarinEMDK.ProfilePowerMgrSample1
         void profileManager_Data(object sender, ProfileManager.DataEventArgs e)
         {
             // Call back with the result of the processProfileAsync
+
             EMDKResults results = e.P0.Result;
 
             string statusString = CheckXmlError(results);
@@ -210,7 +225,7 @@ namespace Symbol.XamarinEMDK.ProfilePowerMgrSample1
 
         void AddSetButtonListener()
         {
-            Button btnSet = (Button)FindViewById<Button>(Resource.Id.buttonSet) as Button;
+            Button btnSet = FindViewById<Button>(Resource.Id.buttonSet) as Button;
 
             btnSet.Click += btnSet_Click;
         }
@@ -223,20 +238,83 @@ namespace Symbol.XamarinEMDK.ProfilePowerMgrSample1
 
         private void SetProfile()
         {
-            statusTextView.Text = "";
-
             string[] modifyData = new string[1];
 
-            if (pwrRadioSuspend.Checked)
+            statusTextView.Text = "";
+            RadioGroup radiogroup = FindViewById(Resource.Id.radioGroup1) as RadioGroup;
+
+            if (wifiRadioEnable.Checked)
             {
-                // Prepare name-value pairs to modify the existing profile
-                modifyData[0] = ProfileManager.CreateNameValuePair(featureName, "ResetAction", "1");
+                modifyData[0] =
+                   "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                   "<characteristic type=\"Profile\">" +
+                       "<parm name=\"ProfileName\" value=\"WifiProfile-1\"/>" +
+                        "<characteristic type=\"Wi-Fi\">" +
+                        "<parm name=\"emdk_name\" value=\"WifiMgr1\"/>" +
+                           "<characteristic type=\"System\">" +
+                               "<parm name=\"WiFiAction\" value=\"enable\"/>" +
+                           "</characteristic>" +
+                           "<parm name=\"UseRegulatory\" value=\"0\"/>" +
+                            "<parm name=\"UseAdvancedOptions\" value=\"0\"/>";
+
             }
             else
             {
-                modifyData[0] = ProfileManager.CreateNameValuePair(featureName, "ResetAction", "4");
-            }      
-           
+                modifyData[0] =
+                    "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                    "<characteristic type=\"Profile\">" +
+                        "<parm name=\"ProfileName\" value=\"WifiProfile-1\"/>" +
+                         "<characteristic type=\"Wi-Fi\">" +
+                         "<parm name=\"emdk_name\" value=\"WifiMgr1\"/>" +
+                            "<characteristic type=\"System\">" +
+                                "<parm name=\"WiFiAction\" value=\"disable\"/>" +
+                            "</characteristic>" +
+                            "<parm name=\"UseRegulatory\" value=\"0\"/>" +
+                            "<parm name=\"UseAdvancedOptions\" value=\"0\"/>";
+            }
+
+
+            action = (Action)ActionSpinner.SelectedItemId;
+
+            switch (action)
+            {
+                case Action.ADD:
+                    modifyData[0] += "<parm name=\"NetworkAction\" value=\"Add\"/>" +
+                     "<characteristic type=\"network-profile\">" +
+                     "<parm name=\"SSID\" value=\"" + ssidEditText.Text + "\"/>" +
+                     "<parm name=\"SecurityMode\" value=\"0\"/>" +
+                    "<parm name=\"UseDHCP\" value=\"1\"/>" +
+                    "<parm name=\"UseProxy\" value=\"0\"/>" +
+                    "</characteristic>";
+                    break;
+
+                case Action.REMOVE:
+                    modifyData[0] += "<parm name=\"NetworkAction\" value=\"Remove\"/>" +
+                    "<characteristic type=\"network-profile\">" +
+                    "<parm name=\"SSID\" value=\"" + ssidEditText.Text + "\"/>" +
+                    "</characteristic>";
+                    break;
+
+                case Action.CONNECT:
+                    modifyData[0] += "<parm name=\"NetworkAction\" value=\"Connect\"/>" +
+                    "<characteristic type=\"network-profile\">" +
+                    "<parm name=\"SSID\" value=\"" + ssidEditText.Text + "\"/>" +
+                    "</characteristic>";
+                    break;
+
+                case Action.DISCONNECT:
+                    modifyData[0] += "<parm name=\"NetworkAction\" value=\"Disconnect\"/>" +
+                    "<characteristic type=\"network-profile\">" +
+                    "<parm name=\"SSID\" value=\"" + ssidEditText.Text + "\"/>" +
+                    "</characteristic>";
+                    break;
+
+                default:
+                    break;
+            }
+
+            modifyData[0] += "</characteristic></characteristic>";
+
             // Call processPrfoileAsync with profile name, 'Set' flag and modify data to update the profile
             EMDKResults results = profileManager.ProcessProfileAsync(profileName, ProfileManager.PROFILE_FLAG.Set, modifyData);
 
@@ -247,8 +325,14 @@ namespace Symbol.XamarinEMDK.ProfilePowerMgrSample1
             {
                 statusTextView.Text = resultString;
             }
+
         }
+
 
     }
 }
+
+
+
+
 

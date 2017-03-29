@@ -9,9 +9,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("Symbol.XamarinEMDK.ProfilePowerMgrSample1.Resource", IsApplication=true)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("Symbol.XamarinEMDK.ProfileWifiSample1.Resource", IsApplication=true)]
 
-namespace Symbol.XamarinEMDK.ProfilePowerMgrSample1
+namespace Symbol.XamarinEMDK.ProfileWifiSample1
 {
 	
 	
@@ -26,6 +26,22 @@ namespace Symbol.XamarinEMDK.ProfilePowerMgrSample1
 		
 		public static void UpdateIdValues()
 		{
+		}
+		
+		public partial class Array
+		{
+			
+			// aapt resource value: 0x7f060000
+			public const int NetworkActions = 2131099648;
+			
+			static Array()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private Array()
+			{
+			}
 		}
 		
 		public partial class Attribute
@@ -47,8 +63,14 @@ namespace Symbol.XamarinEMDK.ProfilePowerMgrSample1
 			// aapt resource value: 0x7f040000
 			public const int activity_horizontal_margin = 2130968576;
 			
+			// aapt resource value: 0x7f040002
+			public const int activity_horizontal_margin_landscape = 2130968578;
+			
 			// aapt resource value: 0x7f040001
 			public const int activity_vertical_margin = 2130968577;
+			
+			// aapt resource value: 0x7f040003
+			public const int activity_vertical_margin_landscape = 2130968579;
 			
 			static Dimension()
 			{
@@ -79,26 +101,41 @@ namespace Symbol.XamarinEMDK.ProfilePowerMgrSample1
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f060002
-			public const int buttonSet = 2131099650;
+			// aapt resource value: 0x7f07000b
+			public const int buttonSet = 2131165195;
 			
-			// aapt resource value: 0x7f060000
-			public const int linearLayout1 = 2131099648;
+			// aapt resource value: 0x7f070008
+			public const int editTextSSID = 2131165192;
 			
-			// aapt resource value: 0x7f060003
-			public const int radioGroupPwr = 2131099651;
+			// aapt resource value: 0x7f070000
+			public const int linearLayout1 = 2131165184;
 			
-			// aapt resource value: 0x7f060005
-			public const int radioReset = 2131099653;
+			// aapt resource value: 0x7f070003
+			public const int radio0 = 2131165187;
 			
-			// aapt resource value: 0x7f060004
-			public const int radioSuspend = 2131099652;
+			// aapt resource value: 0x7f070004
+			public const int radio1 = 2131165188;
 			
-			// aapt resource value: 0x7f060001
-			public const int textView1 = 2131099649;
+			// aapt resource value: 0x7f070002
+			public const int radioGroup1 = 2131165186;
 			
-			// aapt resource value: 0x7f060006
-			public const int textViewStatus = 2131099654;
+			// aapt resource value: 0x7f070007
+			public const int spinner1 = 2131165191;
+			
+			// aapt resource value: 0x7f070001
+			public const int textView1 = 2131165185;
+			
+			// aapt resource value: 0x7f07000a
+			public const int textView2 = 2131165194;
+			
+			// aapt resource value: 0x7f070009
+			public const int textView3 = 2131165193;
+			
+			// aapt resource value: 0x7f070006
+			public const int textView4 = 2131165190;
+			
+			// aapt resource value: 0x7f070005
+			public const int textViewStatus = 2131165189;
 			
 			static Id()
 			{
@@ -114,10 +151,10 @@ namespace Symbol.XamarinEMDK.ProfilePowerMgrSample1
 		{
 			
 			// aapt resource value: 0x7f030000
-			public const int Landscape = 2130903040;
+			public const int Landscape_Layout = 2130903040;
 			
 			// aapt resource value: 0x7f030001
-			public const int Portrait = 2130903041;
+			public const int Portrait_Layout = 2130903041;
 			
 			static Layout()
 			{
@@ -133,10 +170,13 @@ namespace Symbol.XamarinEMDK.ProfilePowerMgrSample1
 		{
 			
 			// aapt resource value: 0x7f050001
-			public const int ApplicationName = 2131034113;
+			public const int action_settings = 2131034113;
 			
 			// aapt resource value: 0x7f050000
-			public const int Hello = 2131034112;
+			public const int app_name = 2131034112;
+			
+			// aapt resource value: 0x7f050002
+			public const int hello_world = 2131034114;
 			
 			static String()
 			{
